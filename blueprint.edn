@@ -1,0 +1,11 @@
+[{:itonami.blueprint/social-impact [:worker-safety :product-quality :public-health]
+  :itonami.blueprint/domain :manufacturing/dairy-scheduling-logistics-coordination
+  :itonami.blueprint/required-technologies [:robotics :identity :audit-ledger]
+  :itonami.blueprint/isco-08 "7513"
+  :itonami.blueprint/name "Dairy Shop Scheduling and Logistics Coordination Practice"
+  :itonami.blueprint/governor :dairy-coord-governor
+  :itonami.blueprint/robotics true
+  :db/id -1
+  :itonami.blueprint/status :public-oss
+  :itonami.blueprint/id "cloud-itonami-isco-7513"
+  :itonami.blueprint/license "AGPL-3.0-or-later"}]
