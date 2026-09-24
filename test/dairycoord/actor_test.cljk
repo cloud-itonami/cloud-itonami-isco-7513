@@ -1,5 +1,5 @@
 (ns dairycoord.actor-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [dairycoord.actor :as actor]
             [dairycoord.store :as store]))
 
