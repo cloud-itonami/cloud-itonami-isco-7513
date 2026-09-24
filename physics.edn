@@ -1,0 +1,41 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:physics` runs it.
+;;
+;; README "Robotics premise": a dairy-shop scheduling/logistics coordination
+;; robot handles crew scheduling, batch/inventory records and raw-milk/dairy-
+;; materials supply orders for a dairy products making crew (ISCO 7513). Its
+;; physical work: pumping milk from the reception tank to the cheese vat,
+;; draining whey from the vat, and warming milk to inoculation temperature.
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isco-7513"
+ :cases
+ [{:id :milk-to-cheese-vat
+   :kind :pipe-flow
+   :procedure "pump transfers raw milk from the reception tank to the cheese vat through 20 m of 38 mm stainless pipe"
+   :params {:diameter-m 0.038 :length-m 20.0 :roughness-m 1.5e-6
+            :density-kg-m3 1030.0 :viscosity-pa-s 2.0e-3 :pump-efficiency 0.55 :elevation-m 2.0}
+   :sweep {:param :q-m3s :values [0.0005 0.001 0.002 0.003 0.004]}
+   :quantity :pump-power-w
+   :limit {:max 750.0 :basis "estimate: shaft power of the 0.75 kW sanitary centrifugal pump assumed for the transfer"}
+   :boundary {:lo 0.0001 :hi 0.01}}
+  {:id :whey-drain
+   :kind :tank-drain
+   :procedure "whey drains from the open cheese vat (1.5 m2, 0.45 m deep) through the outlet valve"
+   :params {:tank-area-m2 1.5 :h0-m 0.45 :h-target-m 0.05 :cd 0.62 :q-in-m3s 0.0}
+   :sweep {:param :orifice-area-m2 :values [0.0005 0.001 0.0015 0.0025 0.004]}
+   :quantity :time-to-target-s
+   :limit {:max 900.0 :basis "estimate: whey off within 15 minutes so the curd is not over-worked"}
+   :boundary {:lo 0.0001 :hi 0.01}}
+  {:id :milk-warm-to-inoculation
+   :kind :thermal
+   :procedure "cold milk (4 C) in pots in a 45 C water bath until the centre (insulated symmetry plane) reaches 42 C; convection inside the milk is not modelled"
+   :params {:thickness-m 0.04 :conductivity-w-mk 0.55 :density-kg-m3 1030.0 :specific-heat-j-kgk 3900.0
+            :t0-c 4.0 :t-hot-c 45.0 :h-front-w-m2k 300.0 :h-back-w-m2k 0.0 :t-back-ambient-c 45.0
+            :threshold-c 42.0 :duration-s 14400.0 :nodes 11}
+   :sweep {:param :thickness-m :values [0.01 0.015 0.02 0.03 0.05]}
+   :quantity :time-to-threshold-s
+   :limit {:max 3600.0 :basis "estimate: one-hour warm-up budget before the culture is added; pure conduction overstates the time"}
+   :boundary {:lo 0.01 :hi 0.1}}]}
